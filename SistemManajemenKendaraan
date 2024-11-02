@@ -1,0 +1,161 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class Kendaraan {
+    private String platNomor;
+    private String merek;
+
+    public Kendaraan(String platNomor, String merek) {
+        this.platNomor = platNomor;
+        this.merek = merek;
+    }
+
+    public String getPlatNomor() {
+        return platNomor;
+    }
+
+    public String getInfo() {
+        return "Kendaraan " + merek + " dengan plat nomor " + platNomor;
+    }
+}
+
+class RiwayatServis extends Kendaraan {
+    private List<Servis> riwayatServis;
+
+    public RiwayatServis(String platNomor, String merek) {
+        super(platNomor, merek);
+        riwayatServis = new ArrayList<>();
+    }
+
+    public void tambahServis(Servis servis) {
+        riwayatServis.add(servis);
+    }
+
+    public List<String> tampilkanRiwayat() {
+        List<String> riwayat = new ArrayList<>();
+        for (Servis s : riwayatServis) {
+            riwayat.add(s.getInfo());
+        }
+        return riwayat.isEmpty() ? List.of("Tidak ada riwayat servis.") : riwayat;
+    }
+}
+
+class Mobil extends RiwayatServis {
+    private int tahun;
+    private String jenis;
+
+    public Mobil(String platNomor, String merek, int tahun, String jenis) {
+        super(platNomor, merek);
+        this.tahun = tahun;
+        this.jenis = jenis;
+    }
+}
+
+class Motor extends RiwayatServis {
+    private int tahun;
+    private int cc;
+
+    public Motor(String platNomor, String merek, int tahun, int cc) {
+        super(platNomor, merek);
+        this.tahun = tahun;
+        this.cc = cc;
+    }
+}
+
+class Servis {
+    private String deskripsi;
+    private int biaya;
+
+    public Servis(String deskripsi, int biaya) {
+        this.deskripsi = deskripsi;
+        this.biaya = biaya;
+    }
+
+    public String getInfo() {
+        return deskripsi + " - Biaya: " + biaya;
+    }
+}
+
+class Pelanggan {
+    private String nama;
+    private String nomorTelepon;
+
+    public Pelanggan(String nama, String nomorTelepon) {
+        this.nama = nama;
+        this.nomorTelepon = nomorTelepon;
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public String getNomorTelepon() {
+        return nomorTelepon;
+    }
+
+    @Override
+    public String toString() {
+        return "Pelanggan{" +
+                "nama='" + nama + '\'' +
+                ", nomorTelepon='" + nomorTelepon + '\'' +
+                '}';
+    }
+}
+
+public class SistemManajemenKendaraan {
+    private List<RiwayatServis> kendaraanList;
+    private List<Pelanggan> pelangganList;
+
+    public SistemManajemenKendaraan() {
+        kendaraanList = new ArrayList<>();
+        pelangganList = new ArrayList<>();
+    }
+
+    public void tambahKendaraan(RiwayatServis kendaraan) {
+        kendaraanList.add(kendaraan);
+    }
+
+    public void tambahPelanggan(Pelanggan pelanggan) {
+        pelangganList.add(pelanggan);
+    }
+
+    public String servisKendaraan(String platNomor, Servis servis) {
+        for (RiwayatServis kendaraan : kendaraanList) {
+            if (kendaraan.getPlatNomor().equals(platNomor)) {
+                kendaraan.tambahServis(servis);
+                return "Servis untuk " + kendaraan.getInfo() + " telah ditambahkan.";
+            }
+        }
+        return "Kendaraan tidak ditemukan.";
+    }
+
+    public List<String> tampilkanRiwayatServis(String platNomor) {
+        for (RiwayatServis kendaraan : kendaraanList) {
+            if (kendaraan.getPlatNomor().equals(platNomor)) {
+                return kendaraan.tampilkanRiwayat();
+            }
+        }
+        return List.of("Kendaraan tidak ditemukan.");
+    }
+
+    public static void main(String[] args) {
+        SistemManajemenKendaraan sistem = new SistemManajemenKendaraan();
+
+        Pelanggan pelanggan1 = new Pelanggan("Arie;", "0812352356");
+        sistem.tambahPelanggan(pelanggan1);
+
+        Mobil mobil1 = new Mobil("B6666ER", "Toyota", 2020, "CITY CAR");
+        Motor motor1 = new Motor("AA223RT", "Yamaha", 2015, 150);
+        sistem.tambahKendaraan(mobil1);
+        sistem.tambahKendaraan(motor1);
+
+        Servis servis1 = new Servis("Perbaikan mesin", 1500000);
+        Servis servis2 = new Servis("Penggantian oli", 90000);
+
+        System.out.println(sistem.servisKendaraan("B6666ER", servis1));
+        System.out.println(sistem.servisKendaraan("AA223RT", servis2));
+
+        List<String> riwayat = sistem.tampilkanRiwayatServis("B6666ER");
+        System.out.println("Riwayat Servis Mobil: " + riwayat);
+    }
+}
